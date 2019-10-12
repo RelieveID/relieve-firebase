@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "relieve-debug"
+    "default": "relieve-debug",
+    "producion": "relieve-production"
   }
 }
