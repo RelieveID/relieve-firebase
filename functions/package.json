@@ -15,7 +15,8 @@
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^8.0.0",
-    "firebase-functions": "^3.1.0"
+    "firebase-functions": "^3.1.0",
+    "tymon": "git+https://github.com/archisdi/tymon.git"
   },
   "devDependencies": {
     "tslint": "^5.12.0",
