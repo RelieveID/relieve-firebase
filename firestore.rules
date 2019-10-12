@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	// True if the user is signed in with same user id
+    function signedInSameId(id) {
+      return request.auth.uid == id;
+    }
+    
+    // True if the user is signed in
+    function signedIn() {
+      return request.auth.uid != null;
+    }
+    
+  	// default everything is can't be access
+    match /{document=**} {    
+      allow read, write: if false;
+    }
+    
+    // only allow same UID to edit user data
+  	match /profiles/{userId} {
+    	allow read: if true;
+  		allow write: if signedInSameId(userId);
+      match /addresses/{document=**} {
+        allow read: if true;
+        allow write: if signedInSameId(userId);
+      }
+      match /families/{otherId} {
+        allow read, write: if signedInSameId(userId) || signedInSameId(otherId);
+      }
+  	}
+    
+    match /req/{document=**} {
+      allow read, write: if signedIn();
+    }
+    
+    // allow read but disable write except admin
+  	match /disasters/{document=**} {
+    	allow read: if true;
+  		allow write: if false;
+  	}
+    
+    // only allow users in the chat to communicate
+    match /chats/{chatId} {
+      allow read, write, create: if request.auth.uid in resource.data.members;
+      match /messages/{document=**} {
+        allow read, write, create: if request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.members;
+      }
+    }
+  }
+}
