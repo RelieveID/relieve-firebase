@@ -3,34 +3,35 @@ declare module "*.json" {
     export default value;
 }
 
+export interface ObjectAny {
+    [s: string]: any;
+}
+
+export interface Pagination {
+    page: number;
+    per_page: number;
+    total_page: number;
+    total_data: number;
+}
+
 export interface DeterminerOut<Model> {
     action: 'CREATE' | 'UPDATE' | 'DELETE',
     data: Model
 }
 
-export interface IContext {
+export interface Context {
     username: string;
     user_id: string;
 }
 
-export interface IData {
-    query: any;
-    body: any;
-    method: string;
-    handler: string;
-}
 
-export interface IHttpError {
+export interface HttpError {
     message: string;
     name: string;
     status: number;
     data?: object;
 }
 
-export interface IHandlerOutput {
-    message?: string;
-    data?: any;
-    status?: number;
-}
-
-type methodHandler = (data: IData, context: IContext) => Promise<IHandlerOutput>;
+export type MakeAny<T> = {
+    [P in keyof T]?: any;
+};

@@ -1,6 +1,6 @@
 import { Change } from "firebase-functions";
 import { DataSnapshot } from "firebase-functions/lib/providers/database";
-import { DeterminerOut } from "../typings/common";
+import { DeterminerOut, ObjectAny } from "../typings/common";
 
 export const isEmptyObject = (object: object) => !Object.keys(object).length;
 export type ActionType = 'CREATE' | 'UPDATE' | 'DELETE';
@@ -28,34 +28,44 @@ export const determineAction = <Model>(data: Change<DataSnapshot>): DeterminerOu
     }
 }
 
-export const parseDataObject = (object: object) => JSON.parse(JSON.stringify(object));
+export const parseDataObject = (object: object): object => JSON.parse(JSON.stringify(object));
 
-export function generatePagination(page: number = 1, perPage: number = 10) {
-    let pg = page;
-    let from, size = 0;
+export const offset = (page: number = 1, per_page: number = 10): number => (page - 1) * per_page;
 
-    if (pg <= 0) {
-        pg = 1;
+export const isEmptyArray = (array: any[]): boolean => array.length === 0;
+
+export const trimObjectKey = (object: ObjectAny): ObjectAny => {
+    Object.keys(object).forEach(
+        (key: string): boolean =>
+            (object[key] === null || object[key] === '' || object[key] === undefined) && delete object[key]
+    );
+    return object;
+};
+
+export const stringifyObjectKey = (object: ObjectAny): ObjectAny => {
+    Object.keys(object).forEach((key: string): void => {
+        object[key] = String(object[key]);
+    });
+    return object;
+};
+
+export const reduceData = (data: any): any => {
+    return Object.keys(data).reduce((res: any, key: string): any => {
+        res[key] = data[key][0];
+        return res;
+    }, {});
+};
+
+export const sorter = (sort: string = '-created_at'): string[] => {
+    let sortString = sort;
+    let sortMethod;
+
+    if (sortString.charAt(0) === '-') {
+        sortMethod = 'desc';
+        sortString = sort.substr(1);
+    } else {
+        sortMethod = 'asc';
     }
-    pg = pg - 1;
-    from = (pg * perPage);
-    size = perPage;
 
-    return { from, size };
-}
-
-export const generateHashMap = (arr: any[], key: string) => {
-    const hash: { [s: string]: any } = {};
-
-    arr.forEach((item: any): void => {
-        hash[item[key]] = item;
-    })
-
-    return hash;
-}
-
-export const elasticDataExsist = (elasticResult:{ hits: { hits: any[], total: { value: number } | number }}) => {
-    const total = elasticResult.hits.total;
-    const count = typeof total === 'number' ? elasticResult.hits.total : elasticResult.hits.total;
-    return count > 0;
-}
+    return [sortString, sortMethod];
+};
