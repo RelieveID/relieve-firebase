@@ -1,6 +1,7 @@
 import { Change } from "firebase-functions";
 import { DataSnapshot } from "firebase-functions/lib/providers/database";
 import { DeterminerOut, ObjectAny } from "../typings/common";
+import { DocumentSnapshot } from "firebase-functions/lib/providers/firestore";
 
 export const isEmptyObject = (object: object) => !Object.keys(object).length;
 export type ActionType = 'CREATE' | 'UPDATE' | 'DELETE';
@@ -69,3 +70,31 @@ export const sorter = (sort: string = '-created_at'): string[] => {
 
     return [sortString, sortMethod];
 };
+
+export const determineFirestoreAction = <Model>(data: Change<DocumentSnapshot>): DeterminerOut<Model> => {
+    let action: ActionType;
+    let payload: undefined | any;
+
+    const isBefore = data.before.exists;
+    const isAfter = data.after.exists;
+
+    if (isBefore && isAfter) {
+        action = 'UPDATE';
+        payload = data.after.data();
+    } else if (!isBefore && isAfter) {
+        action = 'CREATE';
+        payload = data.after.data();
+    } else {
+        action = 'DELETE';
+        payload = data.before.data();
+    }
+
+    if (!payload){
+        throw new Error('No Data')
+    }
+
+    return {
+        action,
+        data: payload
+    }
+}
