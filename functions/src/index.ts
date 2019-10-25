@@ -1,8 +1,6 @@
 import { HttpError, FirebaseContext, MongoContext, DBContext } from 'tymon';
 import { loadEnv } from './utils/env';
 
-import Handlers from './handlers';
-
 /** load env */
 loadEnv();
 
@@ -20,6 +18,7 @@ DBContext.initialize({
     models_path: String(process.env.SQL_MODELS)
 }); // tslint:disable-line
 
+import Handlers from './handlers';
 export default {
     ...Handlers
 }

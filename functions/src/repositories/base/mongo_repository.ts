@@ -1,6 +1,5 @@
 import BaseRepository from './base_repository';
 import { Context, MakeAny } from '../../typings/common';
-import { InsertOneWriteOpResult, InsertWriteOpResult } from 'mongodb';
 
 export default class MongoRepo<Model> extends BaseRepository {
     protected collection: string;
@@ -28,7 +27,7 @@ export default class MongoRepo<Model> extends BaseRepository {
         return db
             .collection(this.collection)
             .insertOne(payload)
-            .then((res: InsertOneWriteOpResult<Model>): any => res.ops[0]);
+            .then((res: any): any => res.ops[0]);
     }
 
     public async createMany(payloads: Partial<Model>[]): Promise<Model[]> {
@@ -36,7 +35,7 @@ export default class MongoRepo<Model> extends BaseRepository {
         return db
             .collection(this.collection)
             .insertMany(payloads)
-            .then((res: InsertWriteOpResult<Model>): any => res.ops);
+            .then((res: any): any => res.ops);
     }
 
     public async updateOne(condition: MakeAny<Model>, payload: Partial<Model>): Promise<void> {

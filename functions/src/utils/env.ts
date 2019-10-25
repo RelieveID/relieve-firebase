@@ -27,7 +27,7 @@ export const loadEnv = () => {
         config = require(envDir);
     } else {
         config = functions.config();
-    }
+    }    
 
     config = parseDataObject(config);
     storeGlobally(config);

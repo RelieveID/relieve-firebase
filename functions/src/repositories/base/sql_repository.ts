@@ -2,7 +2,7 @@ import BaseRepository from './base_repository';
 import { Context, Pagination } from '../../typings/common';
 import { offset, sorter } from '../../utils/helpers';
 
-type attributes = string[] | undefined;
+type Attributes = string[] | undefined;
 
 const DEFAULT_SORT = '-created_at';
 
@@ -14,12 +14,12 @@ export default class SQLRepo<Model> extends BaseRepository {
         this.model = model;
     }
 
-    public async findId(id: string, attributes?: attributes): Promise<Model | undefined> {
+    public async findId(id: string, attributes?: Attributes): Promise<Model | undefined> {
         const db = await this.getDbInstance();
         return db[this.model].findOne({ where: { id }, attributes });
     }
 
-    public async findOne(conditions: Partial<Model>, attributes?: attributes): Promise<Model | undefined> {
+    public async findOne(conditions: Partial<Model>, attributes?: Attributes): Promise<Model | undefined> {
         const db = await this.getDbInstance();
         return db[this.model].findOne({ where: conditions, attributes });
     }
@@ -27,7 +27,7 @@ export default class SQLRepo<Model> extends BaseRepository {
     public async findAll(
         conditions: Partial<Model>,
         sort: string = DEFAULT_SORT,
-        attributes?: attributes
+        attributes?: Attributes
     ): Promise<Model[]> {
         const db = await this.getDbInstance();
         const order = sorter(sort);
@@ -72,7 +72,7 @@ export default class SQLRepo<Model> extends BaseRepository {
     public async paginate(
         conditions: Partial<Model>,
         { page = 1, per_page = 10, sort = DEFAULT_SORT },
-        attributes?: attributes
+        attributes?: Attributes
     ): Promise<{ data: Model[]; meta: Pagination }> {
         const db = await this.getDbInstance();
         const order = sorter(sort);

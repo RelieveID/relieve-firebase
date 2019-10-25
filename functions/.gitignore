@@ -3,5 +3,5 @@
 **/*.js.map
 
 node_modules/
-
 env.json
+!env-parser.js
